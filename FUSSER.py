@@ -121,7 +121,7 @@ with open(args['wordlist'], 'r') as wordlist:
     while word:
         if word[-1] == '\n':
             word = word[:-1]
-        if special and time.time() >= last_special + special_delay:
+        if special and time.time() - last_special < special_delay:
             special = execute_special_equest(args['special_url'], special_method, args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'])
             last_special = time.time()
         execute_request(word, special, args['url'], method, args['data'], headers, proxy, ignore_ssl, args['pattern'])
