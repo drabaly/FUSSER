@@ -11,11 +11,14 @@ from urllib3.exceptions import InsecureRequestWarning
 # TODO: implement multi threading
 # import concurrent.future
 
+session = requests.session()
+
 def get_request_method(method):
+    global session
     if method == 'GET':
-        return requests.get
+        return session.get
     elif method == 'POST':
-        return requests.post
+        return session.post
     else:
         print("Does not exist or not implemented yet")
 
