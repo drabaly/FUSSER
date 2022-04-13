@@ -112,7 +112,7 @@ if args['proxy'] != 'None':
 method = get_request_method(args['method'])
 special_method = get_request_method(args['special_method'])
 ignore_ssl = not args['ignore_ssl'].lower() == 'true' # The variable name is bad, it should be something like 'perform_ssl_checks'
-encode = not args['encode_data'].lower() == 'true' # The variable name is bad, it should be something like 'perform_ssl_checks'
+encode = not args['encode_data'].lower() == 'true' # The variable name is bad, it should be something like 'perform_encoding'
 if not ignore_ssl:
     requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 headers = parse_headers(args['header'])
