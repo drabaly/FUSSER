@@ -22,7 +22,18 @@ class Requester(threading.Thread):
         self.iterator = iterator
         self.special = special
 
-    def execute_request(self, word, regex):
+    def print_response(self, word, response, regex): 
+        print(f"{word} => status: {response.status_code} | size: {len(response.text)}", end='')
+        if regex:
+            regexp = re.compile(regex)
+            if regexp.search(response.text):
+                print(' | Pattern: Match')
+            else:
+                print(' | Pattern: Do not match')
+        else:
+            print()
+
+    def execute_request(self, word):
         url = self.url.replace("$FUZZ$", word)
         if self.special:
             self.special.update_special()
@@ -41,20 +52,12 @@ class Requester(threading.Thread):
                 headers[header] = headers[header].replace("$FUZZ$", word)
                 if (self.special):
                     headers[header] = headers[header].replace("$SPECIAL$", special)
-        response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl)
-        print(f"{word} => status: {response.status_code} | size: {len(response.text)}", end='')
-        if regex:
-            regexp = re.compile(regex)
-            if regexp.search(response.text):
-                print(' | Pattern: Match')
-            else:
-                print(' | Pattern: Do not match')
-        else:
-            print()
+        return self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl)
 
     def run(self):
         word = self.iterator.get_next_element()
         while word:
-            self.execute_request(word, None)
+            response = self.execute_request(word)
+            self.print_response(word, response, None)
             word = self.iterator.get_next_element()
 

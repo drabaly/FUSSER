@@ -8,9 +8,6 @@ from urllib.parse import quote
 
 from urllib3.exceptions import InsecureRequestWarning
 
-# TODO: implement multi threading
-# import concurrent.future
-
 session = requests.session()
 
 def get_request_method(method):
@@ -102,7 +99,6 @@ parser.add_argument('-SvP', '--special-invert-pattern', help='Element to be dele
 
 # Arguments treatment
 args = vars(parser.parse_args())
-#threads = int(args['threads'])
 proxy = None
 if args['proxy'] != 'None':
     proxy = {
@@ -120,7 +116,6 @@ special_headers = parse_headers(args['special_header'])
 
 # Fuzzing
 with open(args['wordlist'], 'r') as wordlist:
-#   with concurrent.future.ThreadPoolExecutor(max_workers = threads) as executor:
     if args['special_url']:
         if not args['special_delay']:
             print('A delay is needed when providing a special URL')
