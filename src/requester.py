@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
+import misc
 import requests
 import threading
 
 class Requester(threading.Thread):
     # overriding constructor
-    def __init__(self, url, method, data, headers, proxy, ssl, encode, iterator):
+    def __init__(self, url, method, data, headers, proxy, ssl, encode, iterator, special):
         # calling parent class constructor
         threading.Thread.__init__(self)
         # request related attribute
         self.session = requests.session()
-        self.method = self.get_request_method(method)
+        self.method = misc.get_request_method(self.session, method)
         self.url = url
         self.data = data
         self.headers = headers
@@ -19,33 +20,28 @@ class Requester(threading.Thread):
         self.encode = encode
 
         self.iterator = iterator
+        self.special = special
 
-    def get_request_method(self, method):
-        if method.upper() == 'GET':
-            return self.session.get
-        elif method.upper() == 'POST':
-            return self.session.post
-        else:
-            print("Does not exist or not implemented yet")
-
-
-    def execute_request(self, word, special, regex):
+    def execute_request(self, word, regex):
         url = self.url.replace("$FUZZ$", word)
-        if special:
-            url = url.replace("$SPECIAL$", special)
-        if self.data:
-            data = self.data.replace("$FUZZ$", word)
-            if special:
-                data = data.replace("$SPECIAL$", special)
+        if self.special:
+            self.special.update_special()
+            url = url.replace("$SPECIAL$", self.special.get_special())
+        data = self.data
+        if data:
+            data = data.replace("$FUZZ$", word)
+            if self.special:
+                data = data.replace("$SPECIAL$", self.special.get_special())
             if self.encode:
                 data = quote(data, safe='=&')
-        if self.headers:
+        headers = self.headers
+        if headers:
             headers = {}
-            for header in self.headers:
-                headers[header] = self.headers[header].replace("$FUZZ$", word)
+            for header in headers:
+                headers[header] = headers[header].replace("$FUZZ$", word)
                 if (self.special):
                     headers[header] = headers[header].replace("$SPECIAL$", special)
-        response = method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl)
+        response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl)
         print(f"{word} => status: {response.status_code} | size: {len(response.text)}", end='')
         if regex:
             regexp = re.compile(regex)
@@ -57,6 +53,8 @@ class Requester(threading.Thread):
             print()
 
     def run(self):
-        for word in self.iterator.get_next_element():
-            self.execute_request(word, None, None)
+        word = self.iterator.get_next_element()
+        while word:
+            self.execute_request(word, None)
+            word = self.iterator.get_next_element()
 
