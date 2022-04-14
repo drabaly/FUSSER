@@ -12,7 +12,7 @@ class Special:
         self.method = misc.get_request_method(self.session, method)
         self.url = url
         self.data = data
-        self.headers = headers
+        self.headers = parse_headers(headers)
         self.proxy = proxy
         self.ssl = ssl
 

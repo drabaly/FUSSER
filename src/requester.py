@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import misc
 import requests
 import threading
+
+import misc
 
 class Requester(threading.Thread):
     # overriding constructor
@@ -14,7 +15,7 @@ class Requester(threading.Thread):
         self.method = misc.get_request_method(self.session, method)
         self.url = url
         self.data = data
-        self.headers = headers
+        self.headers = parse_headers(headers)
         self.proxy = proxy
         self.ssl = ssl
         self.encode = encode
