@@ -2,6 +2,7 @@
 
 import requests
 import threading
+from urllib.parse import quote
 
 from src.misc import *
 
@@ -12,7 +13,7 @@ class Requester(threading.Thread):
         threading.Thread.__init__(self)
         # request related attribute
         self.session = requests.session()
-        self.method = misc.get_request_method(self.session, method)
+        self.method = get_request_method(self.session, method)
         self.url = url
         self.data = data
         self.headers = parse_headers(headers)

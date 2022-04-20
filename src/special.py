@@ -2,6 +2,7 @@
 
 import re
 import requests
+import threading
 
 from src.misc import *
 
@@ -9,7 +10,7 @@ class Special:
     def __init__(self, url, method, data, headers, proxy, ssl, regex, invert_regex, update_condition):
         # request related attribute
         self.session = requests.session()
-        self.method = misc.get_request_method(self.session, method)
+        self.method = get_request_method(self.session, method)
         self.url = url
         self.data = data
         self.headers = parse_headers(headers)
@@ -21,10 +22,14 @@ class Special:
         self.update_condition = update_condition
         self.special_string = ""
 
+        self.lock = threading.Lock()
+
     def update_special(self):
-        if not self.regex or not update_condition:
+        if not self.regex or not self.update_condition:
             return
-        if self.special_string != "" and not update_condition.update():
+        self.lock.acquire()
+        if self.special_string != "" and not self.update_condition.update():
+            self.lock.release()
             return
         regexp = re.compile(self.regex)
         response = self.method(url=self.url, data=self.data, headers=self.headers, proxies=self.proxy, verify=self.ssl)
@@ -35,6 +40,7 @@ class Special:
             print("Special string not found in the server's response")
             exit()
         self.special_string = res.replace(self.invert_regex, '') if self.invert_regex else res
+        self.lock.release()
 
     def get_special(self):
         return self.special_string

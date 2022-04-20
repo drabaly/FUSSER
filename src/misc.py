@@ -16,3 +16,10 @@ def parse_headers(headers):
         value = value.strip()
         res[key] = value
     return res
+
+def response_to_string(response):
+    res = ''
+    for elt in response.headers:
+        res += f"{elt}:{response.headers[elt]}\n"
+    res += response.text
+    return res
