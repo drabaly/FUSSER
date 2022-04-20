@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import src/argumentsHandling
+from src.argumentsHandling import *
 
 def main():
     requesters = parse_arguments()

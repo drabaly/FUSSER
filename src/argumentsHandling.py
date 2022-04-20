@@ -3,10 +3,10 @@
 import argparse
 from urllib3.exceptions import InsecureRequestWarning
 
-import listIterator
-import requester
-import special
-import updater
+from src.listIterator import *
+from src.requester import *
+from src.special import *
+from src.updater import *
 
 def generate_parser():
     parser = argparse.ArgumentParser()

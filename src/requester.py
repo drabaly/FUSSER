@@ -3,7 +3,7 @@
 import requests
 import threading
 
-import misc
+from src.misc import *
 
 class Requester(threading.Thread):
     # overriding constructor

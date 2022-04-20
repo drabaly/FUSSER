@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import re
-
-import misc
 import requests
+
+from src.misc import *
 
 class Special:
     def __init__(self, url, method, data, headers, proxy, ssl, regex, invert_regex, update_condition):
