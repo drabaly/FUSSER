@@ -22,9 +22,9 @@ class Special:
         self.special_string = ""
 
     def update_special(self):
-        if not self.regex:
+        if not self.regex or not update_condition:
             return
-        if self.special_string != "" and not update_condition():
+        if self.special_string != "" and not update_condition.update():
             return
         regexp = re.compile(self.regex)
         response = self.method(url=self.url, data=self.data, headers=self.headers, proxies=self.proxy, verify=self.ssl)

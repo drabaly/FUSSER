@@ -6,6 +6,7 @@ from urllib3.exceptions import InsecureRequestWarning
 import listIterator
 import requester
 import special
+import updater
 
 def generate_parser():
     parser = argparse.ArgumentParser()
@@ -24,7 +25,7 @@ def generate_parser():
     parser.add_argument('-P', '--pattern', help='A regex to check against the body of the responses of the server', required=False, default=None)
     parser.add_argument('-ed', '--encode_data', help='URL encode POST data', required=False, default='False')
 
-    # Regular task
+    # Special task
     parser.add_argument('-Su', '--special-url', help='The URL of the special task', required=False, default=None)
     parser.add_argument('-SD', '--special-delay', help='The delay to wich the special task is to be performed (in seconds)', required=False, default=None)
     parser.add_argument('-Sm', '--special-method', help='The HTTP method to use for the special task', required=False, default="GET")
@@ -52,7 +53,7 @@ def parse_arguments():
         requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
     iterator = listIterator(args['wordlist'])
-    special = special.Special(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], None)
+    special = special.Special(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
     requesters = []
     for i in range(int(args['threads'])):
         requesters.append(requester.Requester(args['url'], args['method'], args['data'], args['header'], proxy, ignore_ssl, encode, iterator, special))
