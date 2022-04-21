@@ -32,13 +32,17 @@ class Special:
             self.lock.release()
             return
         regexp = re.compile(self.regex)
-        response = self.method(url=self.url, data=self.data, headers=self.headers, proxies=self.proxy, verify=self.ssl)
+        try:
+            response = self.method(url=self.url, data=self.data, headers=self.headers, proxies=self.proxy, verify=self.ssl)
+        except Exception as e:
+            self.lock.release()
+            raise e
         text = response_to_string(response)
         try:
             res = regexp.search(text)[0]
         except TypeError:
-            print("Special string not found in the server's response")
-            exit()
+            self.lock.release()
+            raise TypeError("Special string not found in the server's response")
         self.special_string = res.replace(self.invert_regex, '') if self.invert_regex else res
         self.lock.release()
 

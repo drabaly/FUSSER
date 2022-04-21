@@ -3,6 +3,7 @@
 import argparse
 from urllib3.exceptions import InsecureRequestWarning
 
+from src.exceptionHandler import *
 from src.listIterator import *
 from src.requester import *
 from src.special import *
@@ -55,7 +56,8 @@ def parse_arguments():
     iterator = Iterator(args['wordlist'])
     special = Special(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
     requesters = []
+    exception_handler = ExceptionHandler()
     for i in range(int(args['threads'])):
-        requesters.append(Requester(args['url'], args['method'], args['data'], args['header'], proxy, ignore_ssl, encode, iterator, special))
+        requesters.append(Requester(args['url'], args['method'], args['data'], args['header'], args['pattern'], proxy, ignore_ssl, encode, iterator, special, exception_handler))
 
     return requesters

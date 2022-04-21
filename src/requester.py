@@ -8,26 +8,29 @@ from src.misc import *
 
 class Requester(threading.Thread):
     # overriding constructor
-    def __init__(self, url, method, data, headers, proxy, ssl, encode, iterator, special):
+    def __init__(self, url, method, data, headers, pattern, proxy, ssl, encode, iterator, special, exception_handler):
         # calling parent class constructor
         threading.Thread.__init__(self)
+
         # request related attribute
         self.session = requests.session()
         self.method = get_request_method(self.session, method)
         self.url = url
         self.data = data
         self.headers = parse_headers(headers)
+        self.pattern = pattern
         self.proxy = proxy
         self.ssl = ssl
         self.encode = encode
 
         self.iterator = iterator
         self.special = special
+        self.exception_handler = exception_handler
 
-    def print_response(self, word, response, regex): 
+    def print_response(self, word, response):
         print(f"{word} => status: {response.status_code} | size: {len(response.text)}", end='')
-        if regex:
-            regexp = re.compile(regex)
+        if self.pattern:
+            regexp = re.compile(self.pattern)
             if regexp.search(response.text):
                 print(' | Pattern: Match')
             else:
@@ -59,7 +62,13 @@ class Requester(threading.Thread):
     def run(self):
         word = self.iterator.get_next_element()
         while word:
-            response = self.execute_request(word)
-            self.print_response(word, response, None)
+            if self.exception_handler.exception_raised():
+                return
+            try:
+                response = self.execute_request(word)
+            except Exception as e:
+                self.exception_handler.set_exception(e)
+                print(f"Exception occured: {e}")
+                return
+            self.print_response(word, response)
             word = self.iterator.get_next_element()
-

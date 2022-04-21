@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import re
 import time
 
 class Updater:
-    def update(self):
+    def update(self, response):
         raise NotImplementedError("A subclass of this one should be made, defining this method.")
 
 class TimeUpdater(Updater):
@@ -11,12 +12,19 @@ class TimeUpdater(Updater):
         self.delay = delay
         self.last = time.time()
 
-    def update(self):
+    def update(self, response):
         current_time = time.time()
         if self.last + self.delay <= current_time:
             self.last = current_time
             return True
         return False
+
+class ResponseUpdater(Updater):
+    def __init__(self, pattern):
+        self.regex = re.compile(pattern)
+
+    def update(self, response):
+        return self.regex.search(response) != None
 
 def choose_updater(args):
     if args['special_delay']:
