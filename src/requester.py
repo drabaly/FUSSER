@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import requests
 import threading
 from urllib.parse import quote
@@ -41,7 +42,6 @@ class Requester(threading.Thread):
     def execute_request(self, word):
         url = self.url.replace("$FUZZ$", word)
         if self.special:
-            self.special.update_special()
             url = url.replace("$SPECIAL$", self.special.get_special())
         data = self.data
         if data:
@@ -57,7 +57,11 @@ class Requester(threading.Thread):
                 headers[header] = headers[header].replace("$FUZZ$", word)
                 if (self.special):
                     headers[header] = headers[header].replace("$SPECIAL$", special)
-        return self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl)
+        response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl)
+        response_text = response_to_string(response)
+        if self.special.update_special(response_text):
+            return self.execute_request(word)
+        return response
 
     def run(self):
         word = self.iterator.get_next_element()

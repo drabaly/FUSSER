@@ -24,13 +24,13 @@ class Special:
 
         self.lock = threading.Lock()
 
-    def update_special(self):
+    def update_special(self, response):
         if not self.regex or not self.update_condition:
-            return
+            return False
         self.lock.acquire()
-        if self.special_string != "" and not self.update_condition.update():
+        if self.special_string != "" and not self.update_condition.update(response):
             self.lock.release()
-            return
+            return False
         regexp = re.compile(self.regex)
         try:
             response = self.method(url=self.url, data=self.data, headers=self.headers, proxies=self.proxy, verify=self.ssl)
@@ -45,6 +45,7 @@ class Special:
             raise TypeError("Special string not found in the server's response")
         self.special_string = res.replace(self.invert_regex, '') if self.invert_regex else res
         self.lock.release()
+        return True
 
     def get_special(self):
         return self.special_string

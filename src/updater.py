@@ -19,7 +19,7 @@ class TimeUpdater(Updater):
             return True
         return False
 
-class ResponseUpdater(Updater):
+class FlagUpdater(Updater):
     def __init__(self, pattern):
         self.regex = re.compile(pattern)
 
@@ -27,12 +27,17 @@ class ResponseUpdater(Updater):
         return self.regex.search(response) != None
 
 def choose_updater(args):
+    if args['special_delay'] and args['special_flag']:
+        print("Please only select only one updater (-SD or -SF)")
+        exit()
     if args['special_delay']:
         try:
             return TimeUpdater(int(args['special_delay']))
         except ValueError:
             print("The time-based update only takes nubers as argument for the \"special delay\"")
             exit()
+    elif args['special_flag']:
+        return FlagUpdater(args['special_flag'])
     else:
         return None
 

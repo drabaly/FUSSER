@@ -28,7 +28,8 @@ def generate_parser():
 
     # Special task
     parser.add_argument('-Su', '--special-url', help='The URL of the special task', required=False, default=None)
-    parser.add_argument('-SD', '--special-delay', help='The delay to wich the special task is to be performed (in seconds)', required=False, default=None)
+    parser.add_argument('-SD', '--special-delay', help='The delay to wich the special task is to be performed (in seconds) - Incompatible with -SF', required=False, default=None)
+    parser.add_argument('-SF', '--special-flag', help='The regular expression in the normal response to look for to know when the special task is to be performed - Incompatible with -SD', required=False, default=None)
     parser.add_argument('-Sm', '--special-method', help='The HTTP method to use for the special task', required=False, default="GET")
     parser.add_argument('-Sd', '--special-data', help='The data in the body of the requests for the special task', required=False, default=None)
     parser.add_argument('-SH', '--special-header', help='A header to add to the requests for the special task', required=False, action='append', default=None)
