@@ -6,7 +6,7 @@ import threading
 
 from src.misc import *
 
-class Special:
+class Special: #Use this name for a template class => allows to have wordlist based special
     def __init__(self, url, method, data, headers, proxy, ssl, regex, invert_regex, update_condition):
         # request related attribute
         self.session = requests.session()

@@ -9,6 +9,8 @@ from src.requester import *
 from src.special import *
 from src.updater import *
 
+# Generate the argparse parser
+# If new feature are added, they must be documented here
 def generate_parser():
     parser = argparse.ArgumentParser()
 
@@ -38,6 +40,7 @@ def generate_parser():
 
     return parser
 
+# Use the arguments to construct the differents objects needed for the tool to run properly
 def parse_arguments():
     parser = generate_parser()
 

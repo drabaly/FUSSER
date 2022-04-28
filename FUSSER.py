@@ -2,6 +2,7 @@
 
 from src.argumentsHandling import *
 
+# The main function: Running the parser to construct the needed objects and then run the requests in threads.
 def main():
     requesters = parse_arguments()
 

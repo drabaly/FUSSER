@@ -7,13 +7,14 @@ from urllib.parse import quote
 
 from src.misc import *
 
+# The class derivated from the Thread one used to perform the standard requests
 class Requester(threading.Thread):
-    # overriding constructor
+    # Overriding constructor
     def __init__(self, url, method, data, headers, pattern, proxy, ssl, encode, iterator, special, exception_handler):
-        # calling parent class constructor
+        # Calling parent class constructor
         threading.Thread.__init__(self)
 
-        # request related attribute
+        # Request related attribute
         self.session = requests.session()
         self.method = get_request_method(self.session, method)
         self.url = url
@@ -24,10 +25,12 @@ class Requester(threading.Thread):
         self.ssl = ssl
         self.encode = encode
 
+        # Storing the needed objects for the tool to work properly
         self.iterator = iterator
         self.special = special
         self.exception_handler = exception_handler
 
+    # Handle the output of the tool
     def print_response(self, word, response):
         print(f"{word} => status: {response.status_code} | size: {len(response.text)}", end='')
         if self.pattern:
@@ -39,6 +42,7 @@ class Requester(threading.Thread):
         else:
             print()
 
+    # Perform the standard request and call the special request if needed
     def execute_request(self, word):
         url = self.url.replace("$FUZZ$", word)
         if self.special:
@@ -63,6 +67,7 @@ class Requester(threading.Thread):
             return self.execute_request(word)
         return response
 
+    # Loop through the wordlist to call *execute_request*
     def run(self):
         word = self.iterator.get_next_element()
         while word:
