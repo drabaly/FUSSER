@@ -6,7 +6,14 @@ import threading
 
 from src.misc import *
 
-class Special: #Use this name for a template class => allows to have wordlist based special
+class Special:
+    def update_special(self, response):
+        raise NotImplementedError("A subclass of this one should be made, defining this method.")
+
+    def get_special(self):
+        raise NotImplementedError("A subclass of this one should be made, defining this method.")
+
+class SpecialRequest:
     def __init__(self, url, method, data, headers, proxy, ssl, regex, invert_regex, update_condition):
         # request related attribute
         self.session = requests.session()

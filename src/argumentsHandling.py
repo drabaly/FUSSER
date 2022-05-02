@@ -58,7 +58,7 @@ def parse_arguments():
         requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
     iterator = Iterator(args['wordlist'])
-    special = Special(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
+    special = SpecialRequest(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
     requesters = []
     exception_handler = ExceptionHandler()
     for i in range(int(args['threads'])):
