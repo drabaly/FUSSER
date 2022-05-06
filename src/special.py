@@ -5,15 +5,16 @@ import requests
 import threading
 
 from src.misc import *
+from src.listIterator import *
 
 class Special:
     def update_special(self, response):
         raise NotImplementedError("A subclass of this one should be made, defining this method.")
 
     def get_special(self):
-        raise NotImplementedError("A subclass of this one should be made, defining this method.")
+        return self.special_string
 
-class SpecialRequest:
+class SpecialRequest(Special):
     def __init__(self, url, method, data, headers, proxy, ssl, regex, invert_regex, update_condition):
         # request related attribute
         self.session = requests.session()
@@ -54,5 +55,19 @@ class SpecialRequest:
         self.lock.release()
         return True
 
-    def get_special(self):
-        return self.special_string
+class SpecialWordlist(Special):
+    def __init__(self, filename, update_condition):
+        self.special_string = ""
+        self.update_condition = update_condition
+
+        self.list = Iterator(filename)
+
+    def update_special(self, response):
+        if self.update_condition and self.update_condition.update(response):
+            self.special_string = self.list.get_next_element()
+            return True
+        else:
+            return False
+
+    def __del__(self):
+        self.list.__del__()
