@@ -61,9 +61,9 @@ class Requester(threading.Thread):
                 headers[header] = headers[header].replace("$FUZZ$", word)
                 if (self.special):
                     headers[header] = headers[header].replace("$SPECIAL$", special)
-        response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl)
+        response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl, timeout=5) ####TODO: timeout ==> parameter####
         response_text = response_to_string(response)
-        if self.special.update_special(response_text):
+        if self.special and self.special.update_special(response_text):
             return self.execute_request(word)
         return response
 

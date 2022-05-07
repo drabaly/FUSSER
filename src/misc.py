@@ -14,6 +14,8 @@ def get_request_method(session, method):
 
 # Convert a list of headers to a dictionnary one
 def parse_headers(headers):
+    if not headers:
+        return None
     res = {}
     for header in headers:
         key, value = header.split(':')

@@ -14,11 +14,14 @@ class TimeUpdater(Updater):
     # A simple __init__ used to set the needed delay
     def __init__(self, delay):
         self.delay = delay
-        self.last = time.time()
+        self.last = 0
 
     # Checks if an update with the special request is needed
     def update(self, response):
         current_time = time.time()
+        if self.last == 0:
+            self.last = current_time
+            return True
         if self.last + self.delay <= current_time:
             self.last = current_time
             return True
@@ -41,12 +44,13 @@ def choose_updater(args):
         exit()
     if args['special_delay']:
         try:
-            return TimeUpdater(int(args['special_delay']))
+            return TimeUpdater(float(args['special_delay']))
         except ValueError:
             print("The time-based update only takes nubers as argument for the \"special delay\"")
             exit()
     elif args['special_flag']:
         return FlagUpdater(args['special_flag'])
     else:
-        return None
+        print("If a special is defined, a method to update it must be selected")
+        exit()
 

@@ -6,6 +6,7 @@ import threading
 
 from src.misc import *
 from src.listIterator import *
+from src.updater import *
 
 class Special:
     def update_special(self, response):
@@ -71,3 +72,14 @@ class SpecialWordlist(Special):
 
     def __del__(self):
         self.list.__del__()
+
+def choose_special(args):
+    if args['special_url'] and args['special_wordlist']:
+        print("Please only select only one updater (-Su or -Sw)")
+        exit()
+    if args['special_url']:
+        return SpecialRequest(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
+    elif args['special_wordlist']:
+        return SpecialWordlist(args['special_wordlist'], choose_updater(args))
+    else:
+        return None
