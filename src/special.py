@@ -8,14 +8,19 @@ from src.misc import *
 from src.listIterator import *
 from src.updater import *
 
+# Template class used to force the implementation of the *update_special* method in it's derivates and implement a simple *get_special*
 class Special:
+    # The method used to tell if the special needed to be updated and was updated
     def update_special(self, response):
         raise NotImplementedError("A subclass of this one should be made, defining this method.")
 
+    # The method used to get the last updated special
     def get_special(self):
         return self.special_string
 
+# A class used to get a special based on another request
 class SpecialRequest(Special):
+    # The __init__ of the class to set the needed data to perform the request
     def __init__(self, url, method, data, headers, proxy, ssl, regex, invert_regex, update_condition):
         # request related attribute
         self.session = requests.session()
@@ -33,6 +38,7 @@ class SpecialRequest(Special):
 
         self.lock = threading.Lock()
 
+    # Perform the request to retrieve a new special if needed
     def update_special(self, response):
         if not self.regex or not self.update_condition:
             return False
@@ -56,13 +62,16 @@ class SpecialRequest(Special):
         self.lock.release()
         return True
 
+# A class used to get a special based on a wordlist
 class SpecialWordlist(Special):
+    # A simple __init__ reusing the *Iterator* class that do what we need
     def __init__(self, filename, update_condition):
         self.special_string = ""
         self.update_condition = update_condition
 
         self.list = Iterator(filename)
 
+    # Get the next element in the wordlist if needed
     def update_special(self, response):
         if self.update_condition and self.update_condition.update(response):
             self.special_string = self.list.get_next_element()
@@ -73,6 +82,7 @@ class SpecialWordlist(Special):
     def __del__(self):
         self.list.__del__()
 
+# This function returns the correct special class depending on the arguments sent to the tool
 def choose_special(args):
     if args['special_url'] and args['special_wordlist']:
         print("Please only select only one updater (-Su or -Sw)")
