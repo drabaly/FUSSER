@@ -31,3 +31,7 @@ def response_to_string(response):
         res += f"{elt}:{response.headers[elt]}\n"
     res += response.text
     return res
+
+def single_true(iterable):
+    i = iter(iterable)
+    return any(i) and not any(i)

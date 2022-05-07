@@ -29,8 +29,9 @@ def generate_parser():
     parser.add_argument('-ed', '--encode_data', help='URL encode POST data', required=False, default='False')
 
     # Special task
-    parser.add_argument('-Su', '--special-url', help='The URL of the special task - Incompatible with -Sw', required=False, default=None)
-    parser.add_argument('-Sw', '--special-wordlist', help='The wordlist to use as the special - Incompatible with -Su', required=False, default=None)
+    parser.add_argument('-Su', '--special-url', help='The URL of the special task - Incompatible with -Sw and Sc', required=False, default=None)
+    parser.add_argument('-Sw', '--special-wordlist', help='The wordlist to use as the special - Incompatible with -Su and -Sc', required=False, default=None)
+    parser.add_argument('-Sc', '--special-code', help='The code to use to update the special - The provided code have access to the response of the prvious normal request with the "response" variable and to the previous special with the "special" variable - Incompatible with -Su and -Sw', required=False, default=None)
     parser.add_argument('-SD', '--special-delay', help='The delay to wich the special task is to be performed (in seconds) - Incompatible with -SF', required=False, default=None)
     parser.add_argument('-SF', '--special-flag', help='The regular expression in the normal response to look for to know when the special task is to be performed - Incompatible with -SD', required=False, default=None)
     parser.add_argument('-Sm', '--special-method', help='The HTTP method to use for the special task', required=False, default="GET")

@@ -82,14 +82,35 @@ class SpecialWordlist(Special):
     def __del__(self):
         self.list.__del__()
 
+class SpecialCode(Special):
+    def __init__(self, code, update_condition):
+        self.special_string = ""
+        self.update_condition = update_condition
+
+        self.code = code
+
+    def update_special(self, response):
+        if self.update_condition and self.update_condition.update(response):
+            special = ""
+            eval(self.code)
+            special.special_string = special
+            return True
+        else:
+            return False
+
 # This function returns the correct special class depending on the arguments sent to the tool
 def choose_special(args):
-    if args['special_url'] and args['special_wordlist']:
-        print("Please only select only one updater (-Su or -Sw)")
+    if
+        return None
+    if not single_true([args['special_url'], args['special_wordlist'], args['special_code']):
+        print("Please only select only one updater (-Su, -Sw or Sc)")
         exit()
     if args['special_url']:
         return SpecialRequest(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
     elif args['special_wordlist']:
         return SpecialWordlist(args['special_wordlist'], choose_updater(args))
+    elif args['special_code']:
+        return SpecialCode(args['special_code'], choose_updater(args))
     else:
-        return None
+        print("Oh no, I should have gone here")
+        exit()
