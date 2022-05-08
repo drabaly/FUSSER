@@ -27,6 +27,7 @@ def generate_parser():
     parser.add_argument('-H', '--header', help='A header to add to the requests', required=False, action='append')
     parser.add_argument('-P', '--pattern', help='A regex to check against the body of the responses of the server', required=False, default=None)
     parser.add_argument('-ed', '--encode_data', help='URL encode POST data', required=False, default='False')
+    parser.add_argument('-to', '--timeout', help='The timeout for all the requests', required=False, default=5)
 
     # Special task
     parser.add_argument('-Su', '--special-url', help='The URL of the special task - Incompatible with -Sw and Sc', required=False, default=None)
@@ -60,10 +61,15 @@ def parse_arguments():
         requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
     iterator = Iterator(args['wordlist'])
+    try:
+        timeout = float(args['timeout'])
+    except ValueError:
+        print('The timeout parameter must be a float (seconds)')
+        exit()
     special = choose_special(args)
     requesters = []
     exception_handler = ExceptionHandler()
     for i in range(int(args['threads'])):
-        requesters.append(Requester(args['url'], args['method'], args['data'], args['header'], args['pattern'], proxy, ignore_ssl, encode, iterator, special, exception_handler))
+        requesters.append(Requester(args['url'], args['method'], args['data'], args['header'], args['pattern'], proxy, ignore_ssl, timeout, encode, iterator, special, exception_handler))
 
     return requesters

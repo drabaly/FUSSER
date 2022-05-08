@@ -10,7 +10,7 @@ from src.misc import *
 # The class derivated from the Thread one used to perform the standard requests
 class Requester(threading.Thread):
     # Overriding constructor
-    def __init__(self, url, method, data, headers, pattern, proxy, ssl, encode, iterator, special, exception_handler):
+    def __init__(self, url, method, data, headers, pattern, proxy, ssl, timeout, encode, iterator, special, exception_handler):
         # Calling parent class constructor
         threading.Thread.__init__(self)
 
@@ -23,6 +23,7 @@ class Requester(threading.Thread):
         self.pattern = pattern
         self.proxy = proxy
         self.ssl = ssl
+        self.timeout = timeout
         self.encode = encode
 
         # Storing the needed objects for the tool to work properly
@@ -61,7 +62,7 @@ class Requester(threading.Thread):
                 headers[header] = headers[header].replace("$FUZZ$", word)
                 if (self.special):
                     headers[header] = headers[header].replace("$SPECIAL$", special)
-        response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl, timeout=5) ####TODO: timeout ==> parameter####
+        response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl, timeout=self.timeout)
         response_text = response_to_string(response)
         if not updated and self.special and self.special.update_special(response_text):
             return self.execute_request(word, True)

@@ -21,7 +21,7 @@ class Special:
 # A class used to get a special based on another request
 class SpecialRequest(Special):
     # The __init__ of the class to set the needed data to perform the request
-    def __init__(self, url, method, data, headers, proxy, ssl, regex, invert_regex, update_condition):
+    def __init__(self, url, method, data, headers, proxy, ssl, timeout, regex, invert_regex, update_condition):
         # request related attribute
         self.session = requests.session()
         self.method = get_request_method(self.session, method)
@@ -30,6 +30,7 @@ class SpecialRequest(Special):
         self.headers = parse_headers(headers)
         self.proxy = proxy
         self.ssl = ssl
+        self.timeout = timeout
 
         self.regex = regex
         self.invert_regex = invert_regex
@@ -48,7 +49,7 @@ class SpecialRequest(Special):
             return False
         regexp = re.compile(self.regex)
         try:
-            response = self.method(url=self.url, data=self.data, headers=self.headers, proxies=self.proxy, verify=self.ssl)
+            response = self.method(url=self.url, data=self.data, headers=self.headers, proxies=self.proxy, verify=self.ssl, timeout=self.timeout)
         except Exception as e:
             self.lock.release()
             raise e
@@ -111,7 +112,8 @@ def choose_special(args):
         print("Please only select only one updater (-Su, -Sw or Sc)")
         exit()
     if args['special_url']:
-        return SpecialRequest(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
+        timeout = float(args['timeout']) # No need for exception handling as it was already done in the argument handling
+        return SpecialRequest(args['special_url'], args['special_method'], args['special_data'], args['special_header'], proxy, ignore_ssl, timeout, args['special_pattern'], args['special_invert_pattern'], choose_updater(args))
     elif args['special_wordlist']:
         return SpecialWordlist(args['special_wordlist'], choose_updater(args))
     elif args['special_code']:
