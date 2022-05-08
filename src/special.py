@@ -82,27 +82,32 @@ class SpecialWordlist(Special):
     def __del__(self):
         self.list.__del__()
 
+# A class used to update the special base on user supplied code
 class SpecialCode(Special):
+    # A simple __init__ setting the user code
     def __init__(self, code, update_condition):
-        self.special_string = ""
+        self.special_string = "Test"
         self.update_condition = update_condition
 
         self.code = code
 
+    # RUn the user's code and update the special
     def update_special(self, response):
         if self.update_condition and self.update_condition.update(response):
-            special = ""
-            eval(self.code)
-            special.special_string = special
+            special = self.special_string
+            loc = locals()
+            exec(self.code, globals(), loc)
+            special = str(loc["special"])
+            self.special_string = special
             return True
         else:
             return False
 
 # This function returns the correct special class depending on the arguments sent to the tool
 def choose_special(args):
-    if
+    if not args['special_url'] and not args['special_wordlist'] and not args['special_code']:
         return None
-    if not single_true([args['special_url'], args['special_wordlist'], args['special_code']):
+    if not single_true([args['special_url'], args['special_wordlist'], args['special_code']]):
         print("Please only select only one updater (-Su, -Sw or Sc)")
         exit()
     if args['special_url']:

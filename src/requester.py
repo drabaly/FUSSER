@@ -42,8 +42,8 @@ class Requester(threading.Thread):
         else:
             print()
 
-    # Perform the standard request and call the special request if needed
-    def execute_request(self, word):
+    # Perform the standard request and call the special request if needed, the updated is here to avoid infinite recursions on the last item
+    def execute_request(self, word, updated=False):
         url = self.url.replace("$FUZZ$", word)
         if self.special:
             url = url.replace("$SPECIAL$", self.special.get_special())
@@ -63,14 +63,14 @@ class Requester(threading.Thread):
                     headers[header] = headers[header].replace("$SPECIAL$", special)
         response = self.method(url=url, data=data, headers=headers, proxies=self.proxy, verify=self.ssl, timeout=5) ####TODO: timeout ==> parameter####
         response_text = response_to_string(response)
-        if self.special and self.special.update_special(response_text):
-            return self.execute_request(word)
+        if not updated and self.special and self.special.update_special(response_text):
+            return self.execute_request(word, True)
         return response
 
     # Loop through the wordlist to call *execute_request*
     def run(self):
         word = self.iterator.get_next_element()
-        while word:
+        while word and word != '':
             if self.exception_handler.exception_raised():
                 return
             try:
