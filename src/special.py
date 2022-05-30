@@ -106,10 +106,8 @@ class SpecialCode(Special):
 
 # This function returns the correct special class depending on the arguments sent to the tool
 def choose_special(args):
-    if not args['special_url'] and not args['special_wordlist'] and not args['special_code']:
-        return None
     if not single_true([args['special_url'], args['special_wordlist'], args['special_code']]):
-        print("Please only select only one updater (-Su, -Sw or Sc)")
+        print("Please only select only one update condition (-Su, -Sw or Sc)")
         exit()
     if args['special_url']:
         timeout = float(args['timeout']) # No need for exception handling as it was already done in the argument handling
@@ -119,5 +117,4 @@ def choose_special(args):
     elif args['special_code']:
         return SpecialCode(args['special_code'], choose_updater(args))
     else:
-        print("Oh no, I should have gone here")
-        exit()
+        return None

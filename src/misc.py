@@ -34,4 +34,7 @@ def response_to_string(response):
 
 def single_true(iterable):
     i = iter(iterable)
-    return any(i) and not any(i)
+    if not any(i):
+        return True
+    else:
+        return any(i) and not any(i)

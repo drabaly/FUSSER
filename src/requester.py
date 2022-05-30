@@ -6,11 +6,12 @@ import threading
 from urllib.parse import quote
 
 from src.misc import *
+from src.printer import *
 
 # The class derivated from the Thread one used to perform the standard requests
 class Requester(threading.Thread):
     # Overriding constructor
-    def __init__(self, url, method, data, headers, pattern, proxy, ssl, timeout, encode, iterator, special, exception_handler):
+    def __init__(self, url, method, data, headers, proxy, ssl, timeout, encode, iterator, special, exception_handler, printer):
         # Calling parent class constructor
         threading.Thread.__init__(self)
 
@@ -20,7 +21,6 @@ class Requester(threading.Thread):
         self.url = url
         self.data = data
         self.headers = parse_headers(headers)
-        self.pattern = pattern
         self.proxy = proxy
         self.ssl = ssl
         self.timeout = timeout
@@ -29,19 +29,8 @@ class Requester(threading.Thread):
         # Storing the needed objects for the tool to work properly
         self.iterator = iterator
         self.special = special
+        self.printer = printer
         self.exception_handler = exception_handler
-
-    # Handle the output of the tool
-    def print_response(self, word, response):
-        print(f"{word} => status: {response.status_code} | size: {len(response.text)}", end='')
-        if self.pattern:
-            regexp = re.compile(self.pattern)
-            if regexp.search(response.text):
-                print(' | Pattern: Match')
-            else:
-                print(' | Pattern: Do not match')
-        else:
-            print()
 
     # Perform the standard request and call the special request if needed, the updated is here to avoid infinite recursions on the last item
     def execute_request(self, word, updated=False):
@@ -80,5 +69,5 @@ class Requester(threading.Thread):
                 self.exception_handler.set_exception(e)
                 print(f"Exception occured: {e}")
                 return
-            self.print_response(word, response)
+            self.printer.print(word, response)
             word = self.iterator.get_next_element()
