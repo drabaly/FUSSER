@@ -6,7 +6,11 @@ import threading
 class Iterator:
     # A simple __init__ opening the wordlist file
     def __init__(self, filename):
-        self.wordlist = open(filename, 'r')
+        try:
+            self.wordlist = open(filename, 'r')
+        except FileNotFoundError:
+            print(f"The file {filename} was not found")
+            exit()
 
         self.lock = threading.Lock()
 
