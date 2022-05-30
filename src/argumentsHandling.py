@@ -11,8 +11,9 @@ from src.updater import *
 
 # Generate the argparse parser
 # If new feature are added, they must be documented here
+# TODO: Use the argparse feature to handle the mutually excluding arguments
 def generate_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser("Use the $FUZZ$ and $SPECIAL$ keywords in the normal requests to replace them by respectively the current word of the wordlist and the special string.\nOptions:\n")
 
     # Global
     parser.add_argument('-t', '--threads', help='The number of threads to use', required=False, default='20')
